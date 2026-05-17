@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>10 Week Mass Building Tracker</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Barlow:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #0d0f12;
+    --surface: #161a1f;
+    --surface2: #1e2329;
+    --border: #2a3040;
+    --accent: #e8b84b;
+    --accent-dim: #7a5e1a;
+    --green: #3ecf6e;
+    --green-dim: #1a4a2e;
+    --text: #f0f2f5;
+    --muted: #7a8499;
+    --danger: #e85555;
+    --font-display: 'Barlow Condensed', sans-serif;
+    --font-body: 'Barlow', sans-serif;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: var(--font-body);
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    font-size: 15px;
+  }
+
+  /* HEADER */
+  .header {
+    background: var(--surface);
+    border-bottom: 1px solid var(--border);
+    padding: 20px 24px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+  }
+  .logo {
+    font-family: var(--font-display);
+    font-size: 26px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+  .logo span { color: var(--text); }
+  .reset-btn {
+    font-size: 12px;
+    padding: 6px 14px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    font-family: var(--font-body);
+    transition: all .15s;
+  }
+  .reset-btn:hover { border-color: var(--danger); color: var(--danger); }
+
+  /* STATS */
+  .stats-bar {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+  }
+  .stat {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+    text-align: center;
+  }
+  .stat-val {
+    font-family: var(--font-display);
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--accent);
+    line-height: 1;
+  }
+  .stat-lbl {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 3px;
+    text-transform: uppercase;
+    letter-spacing: .05em;
+  }
+
+  /* MAIN LAYOUT */
+  .layout {
+    display: grid;
+    grid-template-columns: 220px 1fr;
+    min-height: calc(100vh - 130px);
+  }
+
+  /* SIDEBAR */
+  .sidebar {
+    background: var(--surface);
+    border-right: 1px solid var(--border);
+    padding: 16px;
+  }
+  .sidebar-title {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .1em;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    padding: 0 4px;
+  }
+  .week-list { margin-bottom: 20px; }
+  .week-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 7px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    font-family: var(--font-display);
+    font-weight: 500;
+    letter-spacing: .03em;
+    color: var(--muted);
+    transition: all .15s;
+    margin-bottom: 2px;
+  }
+  .week-item:hover { background: var(--surface2); color: var(--text); }
+  .week-item.active { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-dim); }
+  .week-item.done { color: var(--green); }
+  .week-item.done .week-badge { background: var(--green-dim); color: var(--green); }
+  .week-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: var(--surface2);
+    color: var(--muted);
+  }
+  .day-list {}
+  .day-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 9px 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 13px;
+    color: var(--muted);
+    transition: all .15s;
+    margin-bottom: 2px;
+    border: 1px solid transparent;
+  }
+  .day-item:hover { background: var(--surface2); color: var(--text); }
+  .day-item.active { background: var(--surface2); color: var(--text); border-color: var(--border); }
+  .day-item.done { color: var(--green); }
+  .day-dot {
+    width: 8px; height: 8px;
+    border-radius: 50%;
+    background: var(--border);
+    flex-shrink: 0;
+  }
+  .day-item.done .day-dot { background: var(--green); }
+  .day-item.active .day-dot { background: var(--accent); }
+  .day-label { font-family: var(--font-display); font-weight: 600; font-size: 15px; min-width: 26px; }
+
+  /* CONTENT */
+  .content {
+    padding: 24px;
+    max-width: 860px;
+  }
+  .day-heading {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: .04em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    color: var(--text);
+  }
+  .day-heading span { color: var(--accent); }
+
+  .section-label {
+    font-family: var(--font-display);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 20px 0 8px;
+    padding-left: 2px;
+  }
+
+  .ex-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    transition: border-color .15s;
+  }
+  .ex-card:hover { border-color: #3a4255; }
+
+  .ex-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .ex-name {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: .02em;
+  }
+  .ex-superset {
+    font-size: 11px;
+    color: var(--accent);
+    background: var(--accent-dim);
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-family: var(--font-display);
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+  }
+
+  .sets-header {
+    display: grid;
+    grid-template-columns: 28px 1fr 1fr 32px;
+    gap: 6px;
+    margin-bottom: 5px;
+    padding: 0 2px;
+  }
+  .sets-header span {
+    font-size: 10px;
+    color: var(--muted);
+    text-align: center;
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    font-family: var(--font-display);
+    font-weight: 600;
+  }
+
+  .set-row {
+    display: grid;
+    grid-template-columns: 28px 1fr 1fr 32px;
+    gap: 6px;
+    align-items: center;
+    margin-bottom: 4px;
+  }
+  .set-num {
+    font-family: var(--font-display);
+    font-size: 13px;
+    color: var(--muted);
+    text-align: center;
+  }
+  .set-target {
+    font-size: 10px;
+    color: var(--accent-dim);
+    display: block;
+    line-height: 1;
+  }
+
+  .inp {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    padding: 6px 8px;
+    text-align: center;
+    transition: border-color .15s;
+    -moz-appearance: textfield;
+  }
+  .inp::-webkit-inner-spin-button,
+  .inp::-webkit-outer-spin-button { -webkit-appearance: none; }
+  .inp:focus { outline: none; border-color: var(--accent); }
+  .inp.filled { border-color: #3a4255; color: var(--text); }
+
+  .check-btn {
+    width: 30px; height: 30px;
+    border-radius: 50%;
+    border: 1px solid var(--border);
+    background: var(--bg);
+    cursor: pointer;
+    color: var(--muted);
+    font-size: 14px;
+    display: flex; align-items: center; justify-content: center;
+    transition: all .15s;
+    flex-shrink: 0;
+  }
+  .check-btn:hover { border-color: var(--green); color: var(--green); }
+  .check-btn.checked { background: var(--green-dim); border-color: var(--green); color: var(--green); }
+
+  .note-row {
+    margin-top: 8px;
+  }
+  .note-inp {
+    width: 100%;
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    color: var(--muted);
+    font-family: var(--font-body);
+    font-size: 12px;
+    padding: 6px 10px;
+    resize: none;
+  }
+  .note-inp:focus { outline: none; border-color: var(--border); color: var(--text); }
+  .note-inp::placeholder { color: #3a4255; }
+
+  .finish-row {
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+  .finish-btn {
+    width: 100%;
+    padding: 12px;
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: transparent;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all .2s;
+  }
+  .finish-btn:hover { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+  .finish-btn.done { border-color: var(--green); color: var(--green); background: var(--green-dim); }
+
+  /* RESPONSIVE */
+  @media (max-width: 700px) {
+    .layout { grid-template-columns: 1fr; }
+    .sidebar { border-right: none; border-bottom: 1px solid var(--border); padding: 12px; }
+    .week-list { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 12px; }
+    .week-item { margin-bottom: 0; }
+    .day-list { display: flex; gap: 4px; }
+    .day-item { flex-direction: column; gap: 4px; text-align: center; padding: 8px 10px; }
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .content { padding: 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div class="logo">10 Week <span>Mass</span> Tracker</div>
+    <button class="reset-btn" onclick="resetAll()">&#x21BA; Reset all</button>
+  </div>
+  <div class="stats-bar" id="statsBar"></div>
+</div>
+
+<div class="layout">
+  <div class="sidebar">
+    <div class="sidebar-title">Week</div>
+    <div class="week-list" id="weekList"></div>
+    <div class="sidebar-title">Day</div>
+    <div class="day-list" id="dayList"></div>
+  </div>
+  <div class="content" id="content"></div>
+</div>
+
+<script>
+const DAYS = [
+  {
+    id:'mon', short:'MON', label:'Monday', full:'Chest &amp; Triceps',
+    sections:[
+      {name:'Chest', exercises:[
+        {name:'Barbell bench press', sets:['10','8','8','6']},
+        {name:'Incline bench press', sets:['8','8','6']},
+        {name:'Decline bench press', sets:['8','8','6']},
+        {name:'Dumbbell flys', sets:['10','10']},
+        {name:'Dumbbell pullover', sets:['8','8']},
+      ]},
+      {name:'Triceps', exercises:[
+        {name:'Tricep extension', sets:['10','8','8','6'], note:'Add weight each set'},
+        {name:'Tricep dip', sets:['10','10','10']},
+        {name:'Tricep bench dip', sets:['8','8','8']},
+      ]},
+    ]
+  },
+  {
+    id:'tue', short:'TUE', label:'Tuesday', full:'Back &amp; Biceps',
+    sections:[
+      {name:'Back', exercises:[
+        {name:'Deadlift', sets:['10','8','8','6','4']},
+        {name:'Chin up', sets:['8','8']},
+        {name:'One arm dumbbell row', sets:['8','8','8']},
+        {name:'Seated row', sets:['8','8']},
+        {name:'Close grip lat pulldown', sets:['10','10','8']},
+      ]},
+      {name:'Biceps', exercises:[
+        {name:'Standing barbell curl', sets:['8','8','6']},
+        {name:'Close grip preacher curl', sets:['8','8','6']},
+        {name:'Incline dumbbell curl', sets:['12\u201314','12\u201314']},
+        {name:'Concentration curl', sets:['10','10']},
+      ]},
+    ]
+  },
+  {
+    id:'thu', short:'THU', label:'Thursday', full:'Shoulders &amp; Forearms',
+    sections:[
+      {name:'Shoulders', exercises:[
+        {name:'Machine shoulder press', sets:['10','10','10']},
+        {name:'Dumbbell reverse fly', sets:['8\u201310','8\u201310','8\u201310']},
+        {name:'Military press', sets:['10','10','10','10']},
+        {name:'Dumbbell lateral raise', sets:['10','10']},
+        {name:'Dumbbell shrugs', sets:['10','10'], superset:true},
+        {name:'Upright row', sets:['10','10'], superset:true},
+      ]},
+      {name:'Forearms', exercises:[
+        {name:'Standing wrist curl', sets:['10','10','10','10']},
+        {name:'Barbell wrist curl', sets:['10','10','10','10']},
+      ]},
+    ]
+  },
+  {
+    id:'fri', short:'FRI', label:'Friday', full:'Legs',
+    sections:[
+      {name:'Legs', exercises:[
+        {name:'Squat', sets:['10','8','8','6','4']},
+        {name:'Leg extension', sets:['12','12','12']},
+        {name:'Leg curl', sets:['12','12','12']},
+      ]},
+      {name:'Calves', exercises:[
+        {name:'Standing calf raise', sets:['12','12','12','12']},
+        {name:'Seated calf raise', sets:['12','12']},
+      ]},
+    ]
+  },
+];
+
+let state = {};
+let currentWeek = 1;
+let currentDay = 'mon';
+
+const SK = (w,d) => `w${w}_${d}`;
+
+function getState(w,d){
+  const k = SK(w,d);
+  if(!state[k]) state[k] = {exercises:{}, done:false};
+  return state[k];
+}
+
+function persist(){ localStorage.setItem('massTracker_v1', JSON.stringify({state, currentWeek, currentDay})); }
+
+function load(){
+  try{
+    const raw = localStorage.getItem('massTracker_v1');
+    if(raw){
+      const saved = JSON.parse(raw);
+      state = saved.state || {};
+      currentWeek = saved.currentWeek || 1;
+      currentDay = saved.currentDay || 'mon';
+    }
+  }catch(e){}
+  renderAll();
+}
+
+function totalSessions(){ let n=0; for(let w=1;w<=10;w++) for(let d of DAYS) if(getState(w,d.id).done) n++; return n; }
+function totalWeeksDone(){ let n=0; for(let w=1;w<=10;w++) if(DAYS.every(d=>getState(w,d.id).done)) n++; return n; }
+function currentStreak(){ let s=0; outer: for(let w=10;w>=1;w--) for(let di=DAYS.length-1;di>=0;di--){ if(getState(w,DAYS[di].id).done) s++; else break outer; } return s; }
+
+function renderStats(){
+  const el = document.getElementById('statsBar');
+  const stats = [
+    {v: totalSessions(), l:'Sessions done'},
+    {v: totalWeeksDone()+'/10', l:'Weeks complete'},
+    {v: Math.round(totalSessions()/40*100)+'%', l:'Total progress'},
+    {v: currentStreak(), l:'Streak'},
+  ];
+  el.innerHTML = stats.map(s=>`<div class="stat"><div class="stat-val">${s.v}</div><div class="stat-lbl">${s.l}</div></div>`).join('');
+}
+
+function renderWeekList(){
+  const el = document.getElementById('weekList');
+  let h='';
+  for(let w=1;w<=10;w++){
+    const allDone = DAYS.every(d=>getState(w,d.id).done);
+    const cls = w===currentWeek ? 'week-item active' : allDone ? 'week-item done' : 'week-item';
+    const prog = DAYS.filter(d=>getState(w,d.id).done).length;
+    h+=`<div class="${cls}" onclick="selectWeek(${w})">Week ${w}<span class="week-badge">${allDone?'&#10003;':prog+'/4'}</span></div>`;
+  }
+  el.innerHTML = h;
+}
+
+function renderDayList(){
+  const el = document.getElementById('dayList');
+  el.innerHTML = DAYS.map(d=>{
+    const s = getState(currentWeek, d.id);
+    const cls = d.id===currentDay ? 'day-item active' : s.done ? 'day-item done' : 'day-item';
+    return `<div class="${cls}" onclick="selectDay('${d.id}')"><div class="day-dot"></div><span class="day-label">${d.short}</span><span style="font-size:12px">${d.label}</span></div>`;
+  }).join('');
+}
+
+function renderContent(){
+  const day = DAYS.find(d=>d.id===currentDay);
+  const s = getState(currentWeek, currentDay);
+  let h = `<div class="day-heading"><span>${day.short}</span> &mdash; ${day.full}</div>`;
+
+  day.sections.forEach(sec=>{
+    h += `<div class="section-label">${sec.name}</div>`;
+    sec.exercises.forEach((ex,ei)=>{
+      const exKey = `${sec.name}_${ei}`;
+      const exData = s.exercises[exKey]||{};
+      h += `<div class="ex-card">`;
+      h += `<div class="ex-header"><div class="ex-name">${ex.name}</div>${ex.superset?'<span class="ex-superset">Superset</span>':''}</div>`;
+      h += `<div class="sets-header"><span>#</span><span>Weight (kg)</span><span>Reps</span><span></span></div>`;
+      ex.sets.forEach((targetReps,si)=>{
+        const sd = exData[si]||{};
+        const wv = sd.weight||'';
+        const rv = sd.reps||'';
+        const checked = sd.done||false;
+        h += `<div class="set-row">`;
+        h += `<div class="set-num">${si+1}<span class="set-target">${targetReps}</span></div>`;
+        h += `<input class="inp${wv?' filled':''}" type="number" min="0" step="2.5" placeholder="kg" value="${wv}" oninput="updateSet('${exKey}',${si},'weight',this.value)">`;
+        h += `<input class="inp${rv?' filled':''}" type="number" min="0" placeholder="${targetReps}" value="${rv}" oninput="updateSet('${exKey}',${si},'reps',this.value)">`;
+        h += `<button class="check-btn${checked?' checked':''}" onclick="toggleSet('${exKey}',${si})" title="Mark set done">${checked?'&#10003;':'&#9675;'}</button>`;
+        h += `</div>`;
+      });
+      if(ex.note) h += `<div style="font-size:11px;color:var(--accent);margin-top:6px;padding-left:2px">&#9432; ${ex.note}</div>`;
+      h += `<div class="note-row"><input class="note-inp" placeholder="Add note..." value="${(exData.note||'').replace(/"/g,'&quot;')}" oninput="updateNote('${exKey}',this.value)"></div>`;
+      h += `</div>`;
+    });
+  });
+
+  h += `<div class="finish-row">
+    <button class="finish-btn${s.done?' done':''}" onclick="finishDay()">
+      ${s.done ? '&#10003; Workout complete &#8212; click to undo' : 'Mark workout as complete'}
+    </button>
+  </div>`;
+
+  document.getElementById('content').innerHTML = h;
+}
+
+function renderAll(){ renderStats(); renderWeekList(); renderDayList(); renderContent(); }
+
+function selectWeek(w){ currentWeek=w; persist(); renderAll(); }
+function selectDay(d){ currentDay=d; persist(); renderAll(); }
+
+function updateSet(exKey,si,field,val){
+  const s=getState(currentWeek,currentDay);
+  if(!s.exercises[exKey]) s.exercises[exKey]={};
+  if(!s.exercises[exKey][si]) s.exercises[exKey][si]={};
+  s.exercises[exKey][si][field]=val;
+  persist();
+}
+
+function toggleSet(exKey,si){
+  const s=getState(currentWeek,currentDay);
+  if(!s.exercises[exKey]) s.exercises[exKey]={};
+  if(!s.exercises[exKey][si]) s.exercises[exKey][si]={};
+  s.exercises[exKey][si].done=!s.exercises[exKey][si].done;
+  persist(); renderContent(); renderDayList(); renderStats();
+}
+
+function updateNote(exKey,val){
+  const s=getState(currentWeek,currentDay);
+  if(!s.exercises[exKey]) s.exercises[exKey]={};
+  s.exercises[exKey].note=val;
+  persist();
+}
+
+function finishDay(){
+  const s=getState(currentWeek,currentDay);
+  s.done=!s.done;
+  persist(); renderAll();
+}
+
+function resetAll(){
+  if(!confirm('Delete all workout data? This cannot be undone.')) return;
+  state={}; persist(); renderAll();
+}
+
+load();
+</script>
+</body>
+</html>
